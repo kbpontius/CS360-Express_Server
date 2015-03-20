@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>City Weather</title>
+	<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+</head>
+<body>
+	<form>
+		<p>Enter a Utah City: <input type="text" id="cityfield" value=""><br/></p>
+		Suggestions: <span id="txtHint">empty</span>
+		<div id="button"><button type="button"> Get Weather </button></div>
+		<textarea id="dispcity">NO CITY</textarea>
+		<div id="weather"> No Weather</div>
+	</form>
+	<script>
+	$("#button").click(function(e) {
+		var city = $("#cityfield").val();
+		$("#dispcity").text(city);
+		getAPI(city);
+	});
+
+	function getAPI(city) {
+		var url = "https://api.wunderground.com/api/cc378c9a554bec16/conditions/q/ut/" + city;
+		url += ".json";
+		console.log("API URL:\n" + url);
+		
+		$.ajax({
+			url : url,
+			dataType : "jsonp",
+			success : function(data) {
+				apiSuccess(data);
+			}
+		})
+	}
+
+	function apiSuccess(data) {
+		console.log(data.current_observation.weather);
+		var html = "";
+
+		html += "<ul>";
+		html += "<li>Location: " + data.current_observation.display_location.city + "</li>";
+		html += "<li>Temperature: " + data.current_observation.temp_f + "</li>";
+		html += "<li>Weather: " + data.current_observation.weather + "</li>";
+		html += "</ul>";
+
+		console.log(html);
+		$("#weather").html(html);
+	}
+
+	$("#cityfield").keyup(function() {
+		var url = "http://54.153.103.153/getcity?q=";
+		var input = $("#cityfield").val();
+
+		url += input[0].toUpperCase() + input.substring(1, input.length);
+
+		$.getJSON(url, function(data) {
+			var page = "<ul>";
+			$.each(data, function(i, item) {
+				page += "<li> " + data[i] + "</li>";
+			});
+
+			page += "</ul>";
+
+			$("#txtHint").html(page);
+		})
+		.fail(function(jqXHR, textStatus, errorThrown) {
+			console.log("ERROR: Javascript failed during execution.\n");
+			console.log("STATUS: " + textStatus);
+			console.log("Content: " + jqXHR.responseText);
+		})
+		.done(function() {
+			console.log("Done");
+		});
+
+		$("#txtHint").val($("#cityfield").val());
+	});
+	</script>
+</body>
+</html>

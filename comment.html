@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<script>
+$(document).ready(function(){
+    $("button").click(function(){
+        var myobj = {Name:$("#Name").val(),Comment:$("#Comment").val()};
+        jobj = JSON.stringify(myobj);
+        $("#json").text(jobj);
+
+        var url = "http://54.153.103.153/mongo";
+
+        console.log("URL: " + url);
+        console.log("POST BODY: " + jobj);
+
+        $.ajax ({
+            url: url,
+            type: "POST",
+            data: jobj,
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function(){
+				$("#response").append("Success");
+            }
+        });
+
+        $("#response").append("Success");
+    });
+
+    console.log("Fetching New Data");
+	var url = "http://54.153.103.153/mongo";
+	$.getJSON(url,function(data) {
+		var jsonData;
+		jsonData = "<ul>";
+
+		$.each(data, function(i,item) {
+			jsonData += "<li> Name: "+data[i].Name+" Comment: "+data[i].Comment;
+		});
+		
+		jsonData += "</ul>";
+
+		$("#done").html(jsonData);
+	});
+});
+</script>
+</head>
+<body>
+
+<form id="commentForm" action="">
+  Name: <input type="text" id="Name" value="Mickey"><br>
+  comment: <input type="text" id="Comment" value="Hello"><br>
+</form>
+
+<button>Serialize form values</button>
+
+<div id="json"></div>
+<div id="done"></div>
+<div id="response"></div>
+</body>
+</html>
